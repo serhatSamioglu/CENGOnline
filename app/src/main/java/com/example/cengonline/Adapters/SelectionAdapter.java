@@ -19,15 +19,11 @@ public class SelectionAdapter extends ArrayAdapter<Upload> {
 
     private final ArrayList<Upload> uploads;
     private final Activity context;
-    private final String type;
-    private final String whichScreen;
 
-    public SelectionAdapter(ArrayList<Upload> uploads, Activity context,String type,String whichScreen) {
+    public SelectionAdapter(ArrayList<Upload> uploads, Activity context) {
         super(context, R.layout.selection_list_view,uploads);
         this.uploads = uploads;
         this.context = context;
-        this.type = type;
-        this.whichScreen = whichScreen;
     }
 
     @Override
@@ -35,28 +31,6 @@ public class SelectionAdapter extends ArrayAdapter<Upload> {
         LayoutInflater layoutInflater = context.getLayoutInflater();
 
         View customView = layoutInflater.inflate(R.layout.selection_list_view,null,true );
-
-        if(type.equalsIgnoreCase("Teacher") && whichScreen.equalsIgnoreCase("Assignments")){
-            Button button = customView.findViewById(R.id.selectionViewButton);
-            Button button2 = customView.findViewById(R.id.selectionViewButton2);
-
-            button.setVisibility(View.VISIBLE);
-            button2.setVisibility(View.VISIBLE);
-
-            button.setOnClickListener(new View.OnClickListener() {//edit
-                @Override
-                public void onClick(View v) {
-                    Log.d("butontest", "onClick: "+v.getId());
-                }
-            });
-
-            button2.setOnClickListener(new View.OnClickListener() {//show
-                @Override
-                public void onClick(View v) {
-                    Log.d("butontest", "onClick: "+v.getId());
-                }
-            });
-        }
 
         TextView courseName = customView.findViewById(R.id.selectionViewTextName);
         courseName.setText(uploads.get(position).getContent());

@@ -60,17 +60,18 @@ public class SelectionActivity extends AppCompatActivity {
         uploads = new ArrayList<Upload>();
         whichScreen=false;
 
-        selectionAdapter = new SelectionAdapter(uploads,this,type,"Announcements");
+        selectionAdapter = new SelectionAdapter(uploads,this);
         listView.setAdapter(selectionAdapter);
+
         handleUploads("Announcements");
-        setOnClicks();
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 Intent intent = new Intent(getApplicationContext(),SubmitActivity.class);
                 intent.putExtra("userType",type);
                 intent.putExtra("whichScreen",whichScreen);
-                intent.putExtra("courseID",courseID);
+                intent.putExtra("courseID",courseID.toString());
                 intent.putExtra("uploadID",uploads.get(position).getId());
                 intent.putExtra("content",uploads.get(position).getContent());
                 startActivity(intent);
@@ -111,40 +112,14 @@ public class SelectionActivity extends AppCompatActivity {
 
     public void AnnouncementsPressed(View view){
         whichScreen=false;
-        selectionAdapter = new SelectionAdapter(uploads,this,type,"Announcements");
-        listView.setAdapter(selectionAdapter);
         uploads.clear();
         handleUploads("Announcements");
     }
 
     public void AssignmentsPressed(View view){
         whichScreen=true;
-        selectionAdapter = new SelectionAdapter(uploads,this,type,"Assignments");
-        listView.setAdapter(selectionAdapter);
         uploads.clear();
         handleUploads("Assignments");
-    }
-
-    public void setOnClicks(){//TODO
-        LayoutInflater layoutInflater = this.getLayoutInflater();
-        View customView = layoutInflater.inflate(R.layout.selection_list_view,null,true );
-
-        Button button = customView.findViewById(R.id.selectionViewButton);
-        Button button2 = customView.findViewById(R.id.selectionViewButton2);
-
-        button.setOnClickListener(new View.OnClickListener() {//edit
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        button2.setOnClickListener(new View.OnClickListener() {//show
-            @Override
-            public void onClick(View v) {
-                Log.d("butontest", "onClick: "+v.getId());
-            }
-        });
     }
 
 }
