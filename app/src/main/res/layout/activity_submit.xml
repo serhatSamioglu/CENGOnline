@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="160dp"
-        android:onClick="submitPressed"
+        android:onClick="showPressed"
         android:text="Show"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"

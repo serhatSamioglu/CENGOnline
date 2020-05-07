@@ -3,6 +3,7 @@ package com.example.cengonline.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -60,9 +61,28 @@ public class SubmitActivity extends AppCompatActivity {
         show = findViewById(R.id.showButton);
 
         handleButtons();
+        loadStudentAssigment();
 
-        textView.setText(content);
 
+    }
+
+    public void loadStudentAssigment(){
+        if(type.equalsIgnoreCase("Student") && whichScreen){//öğrenci ödevinin submit ekranını açtıysa
+            databaseReference.child("Uploads").child(courseID).child(uploadID).child(mAuth.getCurrentUser().getUid())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            textView.setText(dataSnapshot.getValue(String.class));
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        }else{
+            textView.setText(content);
+        }
     }
 
     public void handleButtons(){
@@ -94,28 +114,29 @@ public class SubmitActivity extends AppCompatActivity {
             upload("Uploads/"+courseID+"/"+uploadID+"/"+mAuth.getCurrentUser().getUid());
         }
     }
-    public void deletePressed(View view){
 
+    public void deletePressed(View view){
+        String rootName = "";
+        if(whichScreen){
+            rootName = "Assignments";
+        }else{
+            rootName = "Announcements";
+        }
+
+        databaseReference.child(rootName).child(courseID).child(uploadID).removeValue();//ödevi
+        //databaseReference.child("Uploads").child(courseID).child(uploadID).removeValue();//uploads
+        finish();
     }
-    //load this update.
+
+    public void showPressed(View view){
+        Intent intent = new Intent(getApplicationContext(),ShowActivity.class);
+        intent.putExtra("courseID",courseID);
+        intent.putExtra("uploadID",uploadID);
+        startActivity(intent);
+    }
+
     public void upload(final String dataPath){
         databaseReference.child(dataPath).setValue(textView.getText().toString());//upload
-        /*databaseReference.child("ServerTime/time").setValue(ServerValue.TIMESTAMP);
-
-        databaseReference.child("ServerTime/time").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot timeSnapshot) {
-                Long timeLongValue = timeSnapshot.getValue(Long.class);
-                String timeStringValue = String.valueOf(timeLongValue);
-
-                databaseReference.child(dataPath).child(timeStringValue).setValue(textView.getText());//upload
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
     }
 
 }

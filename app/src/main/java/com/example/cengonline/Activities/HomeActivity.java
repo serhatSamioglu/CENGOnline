@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.cengonline.R;
@@ -34,6 +35,7 @@ public class HomeActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
 
     Toolbar toolbar;
+    Button addButton;
 
     ListView listView;
     HomeListAdapter homeListAdapter;
@@ -52,6 +54,12 @@ public class HomeActivity extends AppCompatActivity {
         databaseReference = firebaseDatabase.getReference();
 
         toolbar = findViewById(R.id.homeToolBar);
+        addButton = findViewById(R.id.homeCourseAddButton);
+
+        if(type.equalsIgnoreCase("Student")){
+            addButton.setVisibility(View.GONE);
+        }
+
         setSupportActionBar(toolbar);
 
         listView = findViewById(R.id.homeListView);
@@ -157,5 +165,9 @@ public class HomeActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void addCoursePressed(){
+        
     }
 }
