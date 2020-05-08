@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.cengonline.Adapters.HomeListAdapter;
 import com.example.cengonline.Adapters.UsersListAdapter;
 import com.example.cengonline.Classes.User;
 import com.example.cengonline.R;
@@ -21,16 +20,21 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class UsersActivity extends AppCompatActivity {
+public class ShowActivity extends AppCompatActivity {
+
+    String courseID;
+    String uploadID;
 
     FirebaseAuth mAuth;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
 
     ArrayList<User> users;
+    //ArrayList<String> usersIDs;
     ListView listView;
     UsersListAdapter usersListAdapter;
 
@@ -39,11 +43,18 @@ public class UsersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users);
 
-        mAuth=FirebaseAuth.getInstance();
+        Bundle bundle = getIntent().getExtras();
+        if(bundle != null){
+            courseID= bundle.getString("courseID");
+            uploadID= bundle.getString("uploadID");
+        }
+
+        mAuth= FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
 
         users = new ArrayList<User>();
+        //usersIDs = new ArrayList<String>();
         listView = findViewById(R.id.usersListView);
         usersListAdapter = new UsersListAdapter(users,this);
         listView.setAdapter(usersListAdapter);
@@ -53,21 +64,34 @@ public class UsersActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Intent intent = new Intent(getApplicationContext(),MessageActivity.class);
-                intent.putExtra("chatUserID",users.get(position).getId());
+                Intent intent = new Intent(getApplicationContext(),AssignmentActivity.class);
+                intent.putExtra("courseID",courseID);
+                intent.putExtra("uploadID",uploadID);
+                intent.putExtra("studentID",users.get(position).getId());
                 startActivity(intent);
             }
         });
     }
 
     public void handleUsers(){
-        databaseReference.child("Users").addChildEventListener(new ChildEventListener() {
+        databaseReference.child("Uploads").child(courseID).child(uploadID).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(!dataSnapshot.getValue(User.class).geteMail().equalsIgnoreCase(mAuth.getCurrentUser().getEmail())){
-                    users.add(dataSnapshot.getValue(User.class));
-                    usersListAdapter.notifyDataSetChanged();
-                }
+                /**usersIDs.add(dataSnapshot.getKey());
+                Log.d("userlists", ": "+usersIDs);*/
+
+                databaseReference.child("Users").child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                        users.add(userSnapshot.getValue(User.class));
+                        usersListAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override
@@ -91,5 +115,4 @@ public class UsersActivity extends AppCompatActivity {
             }
         });
     }
-
 }

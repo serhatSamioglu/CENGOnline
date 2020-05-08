@@ -104,7 +104,8 @@ public class SelectionActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Upload upload = new Upload(dataSnapshot.getKey(),dataSnapshot.getValue(String.class));
-                uploads.add(upload);
+                //uploads.add(upload);
+                uploads.add(0,upload);
                 selectionAdapter.notifyDataSetChanged();
             }
 

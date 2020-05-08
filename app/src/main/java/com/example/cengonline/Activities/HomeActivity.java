@@ -2,16 +2,21 @@ package com.example.cengonline.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.example.cengonline.R;
@@ -44,6 +49,11 @@ public class HomeActivity extends AppCompatActivity {
 
     String type;
 
+    //AlertDiaglog
+    EditText inputCourseCode;
+    EditText inputCourseName;
+    AlertDialog alertDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,9 +66,11 @@ public class HomeActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.homeToolBar);
         addButton = findViewById(R.id.homeCourseAddButton);
 
-        if(type.equalsIgnoreCase("Student")){
-            addButton.setVisibility(View.GONE);
-        }
+        /*inputCourseCode = new EditText(this);
+        inputCourseCode.setHint("Tap to write course id");
+        inputCourseName = new EditText(this);
+        inputCourseName.setHint("Tap to write course name");*/
+
 
         setSupportActionBar(toolbar);
 
@@ -70,6 +82,7 @@ public class HomeActivity extends AppCompatActivity {
 
         checkUserType();
         handleCourses();
+        handleAlertDialog();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -84,7 +97,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void handleCourses(){
-        databaseReference.child("Dersler").addChildEventListener(new ChildEventListener() {
+        databaseReference.child("EnrolledCourses").child(mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 courses.add(dataSnapshot.getValue(String.class));
@@ -158,6 +171,9 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 type = dataSnapshot.getValue(String.class);
+                if(type.equalsIgnoreCase("Student")){
+                    addButton.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -167,7 +183,51 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    public void addCoursePressed(){
-        
+    public void addCoursePressed(View view){
+        alertDialog.show();
     }
+
+    public void handleAlertDialog(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add a course");
+        LayoutInflater layoutInflater = getLayoutInflater();
+        View view = layoutInflater.inflate(R.layout.dialog_layout, null);
+
+        inputCourseCode = view.findViewById(R.id.inputCourseCode);
+        inputCourseName = view.findViewById(R.id.inputCourseName);
+
+        builder.setView(view);
+
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                uploadCourse(inputCourseCode.getText().toString(),inputCourseName.getText().toString());
+                inputCourseCode.getText().clear();
+                inputCourseName.getText().clear();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                inputCourseCode.getText().clear();
+                inputCourseName.getText().clear();
+                dialog.dismiss();
+            }
+        });
+
+        alertDialog = builder.create();
+    }
+
+    public void uploadCourse(String courseCode, String courseName){
+        databaseReference.child("Courses").child(courseCode).setValue(courseName);
+        databaseReference.child("EnrolledCourses").child(mAuth.getCurrentUser().getUid()).child(courseCode).setValue(courseName);
+
+        Intent intent = new Intent(getApplicationContext(),StudentListActivity.class);
+        intent.putExtra("courseID",courseCode);
+        intent.putExtra("courseName",courseName);
+        startActivity(intent);
+    }
+
 }

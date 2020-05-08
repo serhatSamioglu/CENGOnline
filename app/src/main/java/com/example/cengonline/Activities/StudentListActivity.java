@@ -4,14 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.example.cengonline.Adapters.HomeListAdapter;
 import com.example.cengonline.Adapters.UsersListAdapter;
 import com.example.cengonline.Classes.User;
 import com.example.cengonline.R;
@@ -24,7 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
-public class UsersActivity extends AppCompatActivity {
+public class StudentListActivity extends AppCompatActivity {
 
     FirebaseAuth mAuth;
     FirebaseDatabase firebaseDatabase;
@@ -34,12 +32,15 @@ public class UsersActivity extends AppCompatActivity {
     ListView listView;
     UsersListAdapter usersListAdapter;
 
+    String courseID;
+    String courseName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users);
 
-        mAuth=FirebaseAuth.getInstance();
+        mAuth= FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
 
@@ -48,14 +49,18 @@ public class UsersActivity extends AppCompatActivity {
         usersListAdapter = new UsersListAdapter(users,this);
         listView.setAdapter(usersListAdapter);
 
+        Bundle bundle = getIntent().getExtras();
+        if(bundle != null){
+            courseID= bundle.getString("courseID");
+            courseName= bundle.getString("courseName");
+        }
+
         handleUsers();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Intent intent = new Intent(getApplicationContext(),MessageActivity.class);
-                intent.putExtra("chatUserID",users.get(position).getId());
-                startActivity(intent);
+                enrollCourse(position);
             }
         });
     }
@@ -92,4 +97,10 @@ public class UsersActivity extends AppCompatActivity {
         });
     }
 
+    public void enrollCourse(int position){
+        databaseReference.child("EnrolledCourses").child(users.get(position).getId()).child(courseID).setValue(courseName);
+        //databaseReference.child("EnrolledCourses").child(mAuth.getCurrentUser().getUid()).child(courseID).setValue(courseName);
+
+        Toast.makeText(getApplicationContext(),users.get(position).geteMail()+" added",Toast.LENGTH_LONG).show();
+    }
 }
