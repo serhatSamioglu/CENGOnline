@@ -7,20 +7,39 @@
     tools:context=".Activities.SelectionActivity">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/verticalGuideline"
+        android:id="@+id/verticalGuideline1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+        app:layout_constraintGuide_percent="0.33" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/verticalGuideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.66" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/whichpageTextView"
+        android:background="@color/colorPrimaryDark"
+        android:text="ANNOUNCMENT"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:gravity="center"
+        android:textSize="40sp"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <Button
         android:id="@+id/AnnouncementsButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Announcements"
+        android:textSize="12sp"
         android:onClick="AnnouncementsPressed"
-        app:layout_constraintBaseline_toBaselineOf="@+id/AssignmentsButton"
-        app:layout_constraintEnd_toEndOf="@+id/verticalGuideline"
+        app:layout_constraintTop_toBottomOf="@+id/whichpageTextView"
+        app:layout_constraintEnd_toEndOf="@+id/verticalGuideline1"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -28,10 +47,22 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Assıgnments"
+        android:textSize="12sp"
         android:onClick="AssignmentsPressed"
+        app:layout_constraintEnd_toEndOf="@+id/verticalGuideline2"
+        app:layout_constraintStart_toStartOf="@+id/verticalGuideline1"
+        app:layout_constraintBottom_toBottomOf="@+id/AnnouncementsButton" />
+
+    <Button
+        android:id="@+id/StreamButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Stream"
+        android:textSize="12sp"
+        android:onClick="StreamPressed"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/verticalGuideline"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/verticalGuideline2"
+        app:layout_constraintBottom_toBottomOf="@+id/AnnouncementsButton"/>
 
     <Button
         android:id="@+id/addButton"

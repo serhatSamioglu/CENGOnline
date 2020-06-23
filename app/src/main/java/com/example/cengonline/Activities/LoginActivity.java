@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.cengonline.Classes.Student;
 import com.example.cengonline.Classes.Teacher;
@@ -41,6 +42,15 @@ public class LoginActivity extends AppCompatActivity {
         mail = findViewById(R.id.mailText);//mailBox
         password = findViewById(R.id.passwordText);//password
 
+        checkCurrentUser();
+
+    }
+
+    public void checkCurrentUser(){
+        if(mAuth.getCurrentUser()!=null){
+            Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
+            startActivity(intent);
+        }
     }
 
     public void signinPressed(View view){//signin Button
@@ -52,6 +62,8 @@ public class LoginActivity extends AppCompatActivity {
                             //giriş başarılı -anasayfaya yönlendir
                             Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
                             startActivity(intent);
+                        }else{
+                            Toast.makeText(getApplicationContext(),task.getException().getMessage(),Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -64,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
 
-                            Teacher user = new Teacher(mail.getText().toString(),password.getText().toString(),
+                            Student user = new Student(mail.getText().toString(),password.getText().toString(),
                                     mAuth.getCurrentUser().getUid());
 
                             databaseReference.child("Users").child(mAuth.getCurrentUser().getUid()).setValue(user);

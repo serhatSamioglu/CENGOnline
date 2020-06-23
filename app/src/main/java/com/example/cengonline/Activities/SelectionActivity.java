@@ -8,8 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -42,14 +40,22 @@ public class SelectionActivity extends AppCompatActivity {
     ArrayList<Upload> uploads;
 
     Button addButton;
+    TextView whichpageTextView;
 
     //AlertDiaglog
-    EditText input;
-    AlertDialog alertDialog;
+    EditText AnnouncementInputView;
+    EditText AssigmentInputView;
+    EditText PostInputView;
+
+    AlertDialog AnnouncementAlertDialog;
+    AlertDialog AssigmentAlertDialog;
+    AlertDialog PostAlertDialog;
+
 
     Integer courseID;
     String type;
     Boolean whichScreen;//false = Announcements,true = Assignments
+    Boolean isStream;//true = stream page open
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,32 +75,56 @@ public class SelectionActivity extends AppCompatActivity {
         listView = findViewById(R.id.selectionListView);
         uploads = new ArrayList<Upload>();
         whichScreen=false;
+        isStream = false;
 
+        whichpageTextView = findViewById(R.id.whichpageTextView);
+        whichpageTextView.setText("Announcements");
         addButton = findViewById(R.id.addButton);
-        input = new EditText(this);
-        input.setHint("Tap to write");
 
-        if(type.equalsIgnoreCase("Student")){
+        AnnouncementInputView = new EditText(this);
+        AnnouncementInputView.setHint("Tap to write");
+
+        AssigmentInputView = new EditText(this);
+        AssigmentInputView.setHint("Tap to write");
+
+        PostInputView = new EditText(this);
+        PostInputView.setHint("Tap to write");
+
+        if(type.equalsIgnoreCase("Student") && !isStream){
             addButton.setVisibility(View.GONE);
-        }
+        }/*else if(type.equalsIgnoreCase("Teacher")){
+            addButton.setVisibility(View.VISIBLE);
+        }*/
 
         selectionAdapter = new SelectionAdapter(uploads,this);
         listView.setAdapter(selectionAdapter);
 
         handleUploads("Announcements");
 
-        handleAlertDialog();
+        handleAnnouncementAlertDialog();
+        handleAssignmentAlertDialog();
+        handlePostAlertDialog();
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Intent intent = new Intent(getApplicationContext(),SubmitActivity.class);
-                intent.putExtra("userType",type);
-                intent.putExtra("whichScreen",whichScreen);
-                intent.putExtra("courseID",courseID.toString());
-                intent.putExtra("uploadID",uploads.get(position).getId());
-                intent.putExtra("content",uploads.get(position).getContent());
-                startActivity(intent);
+                if(!isStream){
+                    Intent intent = new Intent(getApplicationContext(),SubmitActivity.class);
+                    intent.putExtra("userType",type);
+                    intent.putExtra("whichScreen",whichScreen);
+                    intent.putExtra("courseID",courseID.toString());
+                    intent.putExtra("uploadID",uploads.get(position).getId());
+                    intent.putExtra("content",uploads.get(position).getContent());
+                    startActivity(intent);
+                }else{
+                    Intent intent = new Intent(getApplicationContext(),StreamActivity.class);
+                    intent.putExtra("userType",type);
+                    intent.putExtra("courseID",courseID.toString());
+                    intent.putExtra("uploadID",uploads.get(position).getId());
+                    intent.putExtra("content",uploads.get(position).getContent());
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -132,21 +162,48 @@ public class SelectionActivity extends AppCompatActivity {
     }
 
     public void AnnouncementsPressed(View view){
+        if(type.equalsIgnoreCase("Student")){
+            addButton.setVisibility(View.GONE);
+        }
+        whichpageTextView.setText("Announcements");
         whichScreen=false;
+        isStream = false;
         uploads.clear();
         selectionAdapter.notifyDataSetChanged();
         handleUploads("Announcements");
     }
 
     public void AssignmentsPressed(View view){
+        if(type.equalsIgnoreCase("Student")){
+            addButton.setVisibility(View.GONE);
+        }
+        whichpageTextView.setText("Assignments");
         whichScreen=true;
+        isStream = false;
         uploads.clear();
         selectionAdapter.notifyDataSetChanged();
         handleUploads("Assignments");
     }
 
+    public void StreamPressed(View view){
+        addButton.setVisibility(View.VISIBLE);
+        whichpageTextView.setText("Stream");
+        isStream = true;
+        uploads.clear();
+        selectionAdapter.notifyDataSetChanged();
+        handleUploads("Posts/Contents");
+    }
+
     public void addPressed(View view){
-        alertDialog.show();
+        if(isStream){
+            PostAlertDialog.show();
+        }else{
+            if(whichScreen){//assigments
+                AssigmentAlertDialog.show();
+            }else{
+                AnnouncementAlertDialog.show();
+            }
+        }
     }
 
     /*@Override
@@ -164,44 +221,91 @@ public class SelectionActivity extends AppCompatActivity {
         }
     }*/
 
-    public void handleAlertDialog(){
-
-        String rootName = "";
-        if(whichScreen){
-            rootName = "assignment";
-        }else{
-            rootName = "announcement";
-        }
+    public void handleAnnouncementAlertDialog(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Add an "+rootName);
-        builder.setView(input);
+        builder.setTitle("Add an announcement");
+        builder.setView(AnnouncementInputView);
 
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                uploadDatabase(input.getText().toString());
-                input.getText().clear();
+                uploadDatabase(AnnouncementInputView.getText().toString());
+                AnnouncementInputView.getText().clear();
             }
         });
 
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                input.getText().clear();
+                AnnouncementInputView.getText().clear();
                 dialog.dismiss();
             }
         });
 
-        alertDialog = builder.create();
+        AnnouncementAlertDialog = builder.create();
+    }
+
+    public void handleAssignmentAlertDialog(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add an assignment");
+        builder.setView(AssigmentInputView);
+
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                uploadDatabase(AssigmentInputView.getText().toString());
+                AssigmentInputView.getText().clear();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                AssigmentInputView.getText().clear();
+                dialog.dismiss();
+            }
+        });
+
+        AssigmentAlertDialog = builder.create();
+    }
+
+    public void handlePostAlertDialog(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add a post");
+        builder.setView(PostInputView);
+
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                uploadDatabase(PostInputView.getText().toString());
+                PostInputView.getText().clear();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                PostInputView.getText().clear();
+                dialog.dismiss();
+            }
+        });
+
+        PostAlertDialog = builder.create();
     }
 
     public void uploadDatabase(final String input){
         final String rootName;
-        if(whichScreen){
-            rootName = "Assignments";
+        if(isStream){
+            rootName = "Posts/Contents";
         }else{
-            rootName = "Announcements";
+            if(whichScreen){
+                rootName = "Assignments";
+            }else{
+                rootName = "Announcements";
+            }
         }
 
         databaseReference.child("ServerTime/time").setValue(ServerValue.TIMESTAMP);
@@ -213,6 +317,10 @@ public class SelectionActivity extends AppCompatActivity {
                 String timeStringValue = String.valueOf(timeLongValue);
 
                 databaseReference.child(rootName).child(courseID.toString()).child(timeStringValue).setValue(input);//upload
+
+                if(isStream){//kimin yolladığını tutuyor
+                    databaseReference.child("Posts/PublishedPosts").child(timeStringValue).setValue(mAuth.getCurrentUser().getUid());
+                }
             }
 
             @Override

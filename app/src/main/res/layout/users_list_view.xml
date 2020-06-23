@@ -5,9 +5,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="tests"
-        android:textSize="45sp"
-        android:background="@color/colorAccent"
+        android:text="student1@ceng.com"
+        android:textSize="35sp"
         android:id="@+id/usersViewUsersMail"
         ></TextView>
 </RelativeLayout>
