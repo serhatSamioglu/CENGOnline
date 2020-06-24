@@ -97,7 +97,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void handleCourses(){
-        databaseReference.child("EnrolledCourses").child(mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
+        databaseReference.child("EnrolledCourses").child(mAuth.getCurrentUser().getUid())
+                .addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 courses.add(dataSnapshot.getValue(String.class));
@@ -139,6 +140,7 @@ public class HomeActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.profilItem:
                 Intent intent = new Intent(getApplicationContext(),ProfileActivity.class);
+                intent.putExtra("userType",type);
                 startActivity(intent);
                 break;
             case R.id.messageItem:
@@ -222,7 +224,8 @@ public class HomeActivity extends AppCompatActivity {
 
     public void uploadCourse(String courseCode, String courseName){
         databaseReference.child("Courses").child(courseCode).setValue(courseName);
-        databaseReference.child("EnrolledCourses").child(mAuth.getCurrentUser().getUid()).child(courseCode).setValue(courseName);
+        databaseReference.child("EnrolledCourses").child(mAuth.getCurrentUser().getUid())
+                .child(courseCode).setValue(courseName);
 
         Intent intent = new Intent(getApplicationContext(),StudentListActivity.class);
         intent.putExtra("courseID",courseCode);

@@ -7,8 +7,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="kullanıc adı"
-        android:textSize="40sp"
+        android:text="Homework 1 results are out on sakai system."
+        android:textSize="20sp"
         android:id="@+id/selectionViewTextName"
         ></TextView>
 

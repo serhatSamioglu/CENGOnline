@@ -5,14 +5,17 @@ public class Message {
     private String sender;
     private Long date;
 
-    public Message(){
-
-    }
     public Message(String message, String sender, Long date) {
         this.message = message;
         this.sender = sender;
         this.date = date;
     }
+
+    public Message(){
+        //Firebase databaseden mesaj verilerini obje olarak almak için
+        //Message.class özelliği sağlıyor.
+    }
+
     public String getMessage() {
         return message;
     }

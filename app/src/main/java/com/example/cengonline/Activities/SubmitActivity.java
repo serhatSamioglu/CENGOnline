@@ -123,7 +123,7 @@ public class SubmitActivity extends AppCompatActivity {
             rootName = "Announcements";
         }
 
-        databaseReference.child(rootName).child(courseID).child(uploadID).removeValue();//ödevi
+        databaseReference.child(rootName).child(courseID).child(uploadID).removeValue();
         //databaseReference.child("Uploads").child(courseID).child(uploadID).removeValue();//uploads
         finish();
     }

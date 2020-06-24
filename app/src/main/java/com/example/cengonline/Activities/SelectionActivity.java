@@ -316,10 +316,12 @@ public class SelectionActivity extends AppCompatActivity {
                 Long timeLongValue = timeSnapshot.getValue(Long.class);
                 String timeStringValue = String.valueOf(timeLongValue);
 
-                databaseReference.child(rootName).child(courseID.toString()).child(timeStringValue).setValue(input);//upload
+                databaseReference.child(rootName).child(courseID.toString()).child(timeStringValue)
+                        .setValue(input);//upload
 
                 if(isStream){//kimin yolladığını tutuyor
-                    databaseReference.child("Posts/PublishedPosts").child(timeStringValue).setValue(mAuth.getCurrentUser().getUid());
+                    databaseReference.child("Posts/PublishedPosts").child(timeStringValue)
+                            .setValue(mAuth.getCurrentUser().getUid());
                 }
             }
 

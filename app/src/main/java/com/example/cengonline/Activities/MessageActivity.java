@@ -80,19 +80,23 @@ public class MessageActivity extends AppCompatActivity{
             }
         });
     }
+
     public void sendMessage(final String message){
         FirebaseDatabase.getInstance().getReference().child("ServerTime/time").setValue(ServerValue.TIMESTAMP);
-        FirebaseDatabase.getInstance().getReference().child("ServerTime/time").addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("ServerTime/time")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Long longTime = dataSnapshot.getValue(Long.class);
 
                 Message tempMessage = new Message(message,currentUserID,longTime);
 
-                //benim adı altıma mesaj yollandı
-                FirebaseDatabase.getInstance().getReference().child("Messages").child(currentUserID).child(chatUserID).child(String.valueOf(longTime)).setValue(tempMessage);
-                //konuştuğum kişi adı altına yollandı
-                FirebaseDatabase.getInstance().getReference().child("Messages").child(chatUserID).child(currentUserID).child(String.valueOf(longTime)).setValue(tempMessage);
+                //benim id altıma mesaj yollandı
+                FirebaseDatabase.getInstance().getReference().child("Messages").child(currentUserID)
+                        .child(chatUserID).child(String.valueOf(longTime)).setValue(tempMessage);
+                //konuştuğum kişi id altına yollandı
+                FirebaseDatabase.getInstance().getReference().child("Messages").child(chatUserID)
+                        .child(currentUserID).child(String.valueOf(longTime)).setValue(tempMessage);
             }
 
             @Override
@@ -103,7 +107,8 @@ public class MessageActivity extends AppCompatActivity{
     }
 
     private void readMessage(){
-        databaseReference.child("Messages").child(currentUserID).child(chatUserID).addChildEventListener(new ChildEventListener() {
+        databaseReference.child("Messages").child(currentUserID).child(chatUserID)
+                .addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot messagesSnapshot, @Nullable String s) {
                 mChat.add(messagesSnapshot.getValue(Message.class));
